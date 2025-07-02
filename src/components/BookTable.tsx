@@ -1,4 +1,4 @@
-import {Table, Button, Tag} from "antd";
+import {Table, Button, Tag, Space, Popconfirm} from "antd";
 import type {Book} from "../features/library/types.ts";
 import {useGetBooksQuery} from "../features/library/libraryApiSlice.ts";
 
@@ -40,9 +40,22 @@ const columns = [
         title: "Actions",
         key: "actions",
         render: (record: Book) => (
-            <Button type="primary" onClick={() => alert(`Action for ${record.title}`)}>
-                Action
-            </Button>
+            <Space>
+                <Button
+                    type="primary"
+                    onClick={() => alert(`Edit book: ${record.title}`)}
+                >
+                    Edit
+                </Button>
+                <Popconfirm
+                    title="Are you sure to delete this book?"
+                    onConfirm={() => alert(`Delete book: ${record.title}`)}
+                    okText="Yes"
+                    cancelText="No"
+                >
+                    <Button danger>Delete</Button>
+                </Popconfirm>
+            </Space>
         ),
     },
 ];
