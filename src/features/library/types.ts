@@ -11,8 +11,14 @@ export interface Book {
     updatedAt: string;
 }
 
-export interface BookApiResponse extends Book {
+export interface BooksApiResponse extends Book {
     data: Book[]
+    message: string,
+    success: boolean
+}
+
+export interface BookApiResponse extends Book {
+    data: Book
     message: string,
     success: boolean
 }

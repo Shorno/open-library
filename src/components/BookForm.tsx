@@ -1,5 +1,4 @@
-// components/BookForm.tsx
-import { Form, Input, InputNumber, Switch, Button, Flex } from "antd";
+import {Form, Input, InputNumber, Switch, Button, Flex, Select} from "antd";
 import type {FormInstance} from "antd";
 import type {BookFormValues} from "./AddBookForm.tsx";
 
@@ -10,6 +9,20 @@ type BookFormProps = {
     loading?: boolean;
     submitLabel?: string;
 };
+
+interface Genre {
+    value : string,
+    label : string
+}
+
+const genreOptions : Genre[] = [
+    {value: 'FICTION', label: 'Fiction'},
+    {value: 'NON_FICTION', label: 'Non Fiction'},
+    {value: 'SCIENCE', label: 'Science'},
+    {value: 'HISTORY', label: 'History'},
+    {value: 'BIOGRAPHY', label: 'Biography'},
+    {value: 'FANTASY', label: 'Fantasy'}
+]
 
 export default function BookForm({
                                      form,
@@ -45,7 +58,7 @@ export default function BookForm({
                 name="genre"
                 rules={[{ required: true, message: "Please enter the genre" }]}
             >
-                <Input />
+                <Select options={genreOptions} placeholder={"Select genre"}/>
             </Form.Item>
             <Form.Item
                 label="ISBN"

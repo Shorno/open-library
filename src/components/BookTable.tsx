@@ -8,13 +8,14 @@ import {
     Modal,
     notification,
     Typography,
-    Row, Col
+    Row, Col, Flex
 } from "antd";
 import type {Book} from "../features/library/types.ts";
 import {useDeleteBookMutation, useGetBooksQuery} from "../features/library/libraryApiSlice.ts";
 import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
 import UpdateBookModal from "./UpdateBookModal.tsx";
 import {useState} from "react";
+import {Link} from "react-router";
 
 const {Text} = Typography
 
@@ -91,6 +92,7 @@ const BookTable = () => {
             title: "Title",
             dataIndex: "title",
             key: "title",
+            render: (title: string, record: Book) => <Link to={`/book-details/${record._id}`}>{title}</Link>
         },
         {
             title: "Author",
@@ -103,23 +105,23 @@ const BookTable = () => {
             key: "genre",
             render: (genre: string) => <Tag color="blue">{genre}</Tag>,
         },
-        {
-            title: "ISBN",
-            dataIndex: "isbn",
-            key: "isbn",
-        },
-        {
-            title: "Copies",
-            dataIndex: "copies",
-            key: "copies",
-        },
-        {
-            title: "Available",
-            dataIndex: "available",
-            key: "available",
-            render: (available: boolean) =>
-                available ? <Tag color="green">Yes</Tag> : <Tag color="red">No</Tag>,
-        },
+        // {
+        //     title: "ISBN",
+        //     dataIndex: "isbn",
+        //     key: "isbn",
+        // },
+        // {
+        //     title: "Copies",
+        //     dataIndex: "copies",
+        //     key: "copies",
+        // },
+        // {
+        //     title: "Available",
+        //     dataIndex: "available",
+        //     key: "available",
+        //     render: (available: boolean) =>
+        //         available ? <Tag color="green">Yes</Tag> : <Tag color="red">No</Tag>,
+        // },
         {
             title: "Actions",
             key: "actions",
@@ -144,24 +146,28 @@ const BookTable = () => {
     return (
         <>
 
-            <Table
-                loading={isLoading}
-                rowKey="_id"
-                caption={""}
-                locale={{
-                    emptyText: isError ?
-                        <Result
-                            status="warning"
-                            title="Failed to fetch books, please try again later."
-                        />
-                        :
-                        <Empty description={"No books found"}/>
-                }}
-                columns={columns}
-                dataSource={bookList?.data}
-                pagination={{pageSize: 10}}
-                scroll={{x: "max-context"}}
-            />
+            <Flex justify={"center"}>
+                <Col lg={18}>
+                    <Table
+                        loading={isLoading}
+                        rowKey="_id"
+                        caption={""}
+                        locale={{
+                            emptyText: isError ?
+                                <Result
+                                    status="warning"
+                                    title="Failed to fetch books, please try again later."
+                                />
+                                :
+                                <Empty description={"No books found"}/>
+                        }}
+                        columns={columns}
+                        dataSource={bookList?.data}
+                        pagination={{pageSize: 10}}
+                        scroll={{x: "max-context"}}
+                    />
+                </Col>
+            </Flex>
             <UpdateBookModal
                 open={!!editingBook}
                 onClose={() => setEditingBook(null)}

@@ -8,6 +8,8 @@ import BookForm from "./BookForm.tsx";
 export type BookFormValues = Omit<Book, "_id" | "createdAt" | "updatedAt">
 
 
+
+
 const AddBookForm = () => {
     const [form] = Form.useForm();
     const [addBook, {isLoading}] = useAddBookMutation()
@@ -19,7 +21,10 @@ const AddBookForm = () => {
             notification.success({message: response.message})
             navigate("/")
         } catch (error: any) {
-            notification.error({message: error.data?.message, description: error.data?.error?.message})
+            notification.error({
+                message: error.data?.message,
+                description: error.data?.error?.message || error.data?.error?.errorResponse?.errmsg
+            })
         }
     };
 
