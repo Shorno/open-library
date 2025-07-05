@@ -149,6 +149,7 @@ const BookTable = () => {
             <Flex justify={"center"}>
                 <Col lg={18}>
                     <Table
+                        title={() => <Typography.Title level={5}>All Books List</Typography.Title>}
                         loading={isLoading}
                         rowKey="_id"
                         caption={""}

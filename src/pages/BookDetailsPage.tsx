@@ -18,7 +18,7 @@ export default function BookDetailsPage() {
 
 
     return (
-        <Row justify="center" className="py-10 bg-gray-50 min-h-screen">
+        <Row justify="center" className="py-10 min-h-screen">
             <Col xs={24} sm={20} md={16} lg={12}>
                 {isLoading && <BookDetailsCardSkeleton/>}
                 {!isLoading && isError && (

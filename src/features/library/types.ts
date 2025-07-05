@@ -22,3 +22,18 @@ export interface BookApiResponse extends Book {
     message: string,
     success: boolean
 }
+
+
+export interface BookSummary {
+    book: {
+        isbn: string;
+        title: string;
+    };
+    totalQuantity: number;
+}
+
+export interface SummaryApiResponse {
+    data: BookSummary[];
+    message: string;
+    success: boolean;
+}

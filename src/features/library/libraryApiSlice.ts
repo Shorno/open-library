@@ -1,5 +1,5 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
-import type {Book, BookApiResponse, BooksApiResponse} from "./types";
+import type {Book, BookApiResponse, BooksApiResponse, SummaryApiResponse} from "./types";
 import type {BookFormValues} from "../../components/AddBookForm.tsx";
 import type {Dayjs} from "dayjs";
 
@@ -7,7 +7,8 @@ const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 
 const bookTags = {
     bookList: "bookList",
-    bookDetails: "bookDetails"
+    bookDetails: "bookDetails",
+    bookBorrowSummery: "bookBorrowSummery"
 }
 
 export const libraryApi = createApi({
@@ -58,9 +59,15 @@ export const libraryApi = createApi({
                 method: "POST",
                 body: data
             }),
-            invalidatesTags: [bookTags.bookList, bookTags.bookDetails],
+            invalidatesTags: [bookTags.bookList, bookTags.bookDetails, bookTags.bookBorrowSummery],
         }),
-
+        getBorrowBookSummery: build.query<SummaryApiResponse, void>({
+            query: () => ({
+                url: "borrow",
+                method: "GET",
+            }),
+            providesTags: [bookTags.bookBorrowSummery],
+        }),
     }),
 });
 
@@ -70,5 +77,6 @@ export const {
     useAddBookMutation,
     useUpdateBookMutation,
     useGetBookDetailsQuery,
-    useBorrowBookMutation
+    useBorrowBookMutation,
+    useGetBorrowBookSummeryQuery
 } = libraryApi;

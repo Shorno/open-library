@@ -1,7 +1,7 @@
 import {Modal, Typography, Row, Col, Tag, InputNumber, DatePicker, Form, notification, Flex} from "antd";
 import type {Book} from "../features/library/types";
-import dayjs, {Dayjs} from "dayjs";
-import {useEffect, useState} from "react";
+import dayjs from "dayjs";
+import {useEffect} from "react";
 import {useBorrowBookMutation} from "../features/library/libraryApiSlice";
 
 const {Text, Title} = Typography;
@@ -17,30 +17,30 @@ export default function BorrowBookModal({
                                             onClose,
                                             book,
                                         }: BorrowBookModalProps) {
-    const [copies, setCopies] = useState(1);
-    const [dueDate, setDueDate] = useState<Dayjs | null>(null);
+    const [form] = Form.useForm();
     const [borrowBook, {isLoading}] = useBorrowBookMutation();
 
     useEffect(() => {
         if (open && book) {
-            setCopies(1);
-            setDueDate(null);
+            form.resetFields();
         }
-    }, [open, book]);
+    }, [open, book, form]);
 
     const handleBorrow = async () => {
-        if (!book || !dueDate) return;
         try {
+            const values = await form.validateFields();
+            if (!book) return;
             const response = await borrowBook({
                 data: {
                     book: book._id,
-                    quantity: copies,
-                    dueDate: dueDate.toISOString()
+                    quantity: values.copies,
+                    dueDate: values.dueDate.toISOString()
                 }
             }).unwrap();
             notification.success({message: response.message});
             onClose();
         } catch (error: any) {
+            if (error?.errorFields) return;
             notification.error({
                 message: error?.data?.message || "Failed to borrow book.",
                 description: error?.data?.error?.errorResponse?.errmsg
@@ -55,7 +55,7 @@ export default function BorrowBookModal({
             onOk={handleBorrow}
             okText="Borrow"
             okButtonProps={{
-                disabled: !book?.available || !copies || !dueDate || copies < 1 || (book && copies > book.copies),
+                disabled: !book?.available || isLoading,
                 loading: isLoading,
             }}
             cancelButtonProps={{disabled: isLoading}}
@@ -95,27 +95,46 @@ export default function BorrowBookModal({
                         </Col>
                     </Row>
 
-                    <Form layout="vertical">
+                    <Form
+                        form={form}
+                        layout="vertical"
+                        initialValues={{
+                            copies: 1,
+                            dueDate: null
+                        }}
+                    >
                         <Flex justify={"space-between"} gap={10}>
-                            <Form.Item label="Number of Copies" required>
+                            <Form.Item
+                                label="Number of Copies"
+                                name="copies"
+                                required
+                                rules={[
+                                    {
+                                        validator: (_, value) => {
+                                            if (!value || value < 1) {
+                                                return Promise.reject(new Error("Must borrow at least 1 copy"));
+                                            }
+                                            if (book && value > book.copies) {
+                                                return Promise.reject(new Error("Cannot borrow more than available copies"));
+                                            }
+                                            return Promise.resolve();
+                                        }
+                                    }
+                                ]}
+                            >
                                 <InputNumber
                                     min={1}
-                                    max={book.copies}
-                                    value={copies}
-                                    onChange={value => setCopies(value || 1)}
                                     style={{width: "100%"}}
                                     disabled={!book.available}
                                 />
-                                {copies > book.copies && (
-                                    <Text type="danger" className="block mt-1">
-                                        Cannot borrow more than available copies.
-                                    </Text>
-                                )}
                             </Form.Item>
-                            <Form.Item label="Due Date" required>
+                            <Form.Item
+                                label="Due Date"
+                                name="dueDate"
+                                required
+                                rules={[{ required: true, message: "Please select a due date" }]}
+                            >
                                 <DatePicker
-                                    value={dueDate}
-                                    onChange={setDueDate}
                                     style={{width: "100%"}}
                                     disabledDate={current => current && current < dayjs().startOf('day')}
                                     disabled={!book.available}
