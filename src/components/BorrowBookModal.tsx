@@ -3,6 +3,7 @@ import type {Book} from "../features/library/types";
 import dayjs from "dayjs";
 import {useEffect} from "react";
 import {useBorrowBookMutation} from "../features/library/libraryApiSlice";
+import {useNavigate} from "react-router";
 
 const {Text, Title} = Typography;
 
@@ -19,6 +20,7 @@ export default function BorrowBookModal({
                                         }: BorrowBookModalProps) {
     const [form] = Form.useForm();
     const [borrowBook, {isLoading}] = useBorrowBookMutation();
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (open && book) {
@@ -39,6 +41,7 @@ export default function BorrowBookModal({
             }).unwrap();
             notification.success({message: response.message});
             onClose();
+            navigate("/borrow-summary")
         } catch (error: any) {
             if (error?.errorFields) return;
             notification.error({

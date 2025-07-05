@@ -12,10 +12,11 @@ import {
 } from "antd";
 import type {Book} from "../features/library/types.ts";
 import {useDeleteBookMutation, useGetBooksQuery} from "../features/library/libraryApiSlice.ts";
-import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
+import {BookOutlined, DeleteOutlined, EditOutlined} from "@ant-design/icons";
 import UpdateBookModal from "./UpdateBookModal.tsx";
 import {useState} from "react";
 import {Link} from "react-router";
+import BorrowBookModal from "./BorrowBookModal.tsx";
 
 const {Text} = Typography
 
@@ -23,6 +24,14 @@ const BookTable = () => {
     const {data: bookList, isLoading, isError} = useGetBooksQuery();
     const [deleteBook] = useDeleteBookMutation();
     const [editingBook, setEditingBook] = useState<Book | null>(null);
+    const [borrowModalOpen, setBorrowModalOpen] = useState(false);
+    const [book, setBook] = useState<Book | null>(null)
+
+    const handleOpenBorrowModal = (record: Book) => {
+        setBook(record)
+        setBorrowModalOpen(true)
+    };
+    const handleCloseBorrowModal = () => setBorrowModalOpen(false);
 
 
     const handleDelete = async (record: Book) => {
@@ -128,6 +137,11 @@ const BookTable = () => {
             render: (record: Book) => (
                 <Space>
                     <Button
+                        onClick={() => handleOpenBorrowModal(record)}
+                    >
+                        <BookOutlined/> Borrow Book
+                    </Button>
+                    <Button
                         onClick={() => setEditingBook(record)}
                     >
                         <EditOutlined/>
@@ -173,6 +187,11 @@ const BookTable = () => {
                 open={!!editingBook}
                 onClose={() => setEditingBook(null)}
                 book={editingBook}
+            />
+            <BorrowBookModal
+                open={borrowModalOpen}
+                onClose={handleCloseBorrowModal}
+                book={book}
             />
         </>
     );
