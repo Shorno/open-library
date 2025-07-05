@@ -21,7 +21,7 @@ import BorrowBookModal from "./BorrowBookModal.tsx";
 const {Text} = Typography
 
 const BookTable = () => {
-    const {data: bookList, isLoading, isError} = useGetBooksQuery();
+    const {data: bookList, isLoading, isError, refetch} = useGetBooksQuery();
     const [deleteBook] = useDeleteBookMutation();
     const [editingBook, setEditingBook] = useState<Book | null>(null);
     const [borrowModalOpen, setBorrowModalOpen] = useState(false);
@@ -171,7 +171,10 @@ const BookTable = () => {
                             emptyText: isError ?
                                 <Result
                                     status="warning"
-                                    title="Failed to fetch books, please try again later."
+                                    title="Failed to fetch books, please try again."
+                                    extra={
+                                        <Button onClick={() => refetch()}>Retry</Button>
+                                    }
                                 />
                                 :
                                 <Empty description={"No books found"}/>
